@@ -1,1 +1,1 @@
-# Team-Thon---Python-Mini-Project
+# Team-PiThon-Python-Mini-Project
