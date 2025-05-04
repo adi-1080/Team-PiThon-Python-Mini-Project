@@ -1,74 +1,51 @@
 from django.db import models
-from django.contrib.auth.models import User
+from django.contrib.auth.models import AbstractUser
+from django.db.models.signals import post_save
+from django.dispatch import receiver
 from django.utils import timezone
 
-class User(models.Model):
-    user_id = models.AutoField(primary_key=True)
-    name = models.CharField(max_length=100)
-    phone_number = models.CharField(max_length=15)
-    preferred_language = models.CharField(max_length=50)
-    location = models.CharField(max_length=200)
-    is_smartphone_user = models.BooleanField(default=False)
-
-    def __str__(self):
-        return self.name
+class User(AbstractUser):
+    is_pharmacy = models.BooleanField(default=False)
+    phone_number = models.CharField(max_length=15, blank=True)
+    address = models.TextField(blank=True)
 
 class Pharmacy(models.Model):
-    pharmacy_id = models.AutoField(primary_key=True)
-    name = models.CharField(max_length=100)
-    address = models.TextField()
-    location = models.CharField(max_length=200)
-    contact_number = models.CharField(max_length=15)
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    license_number = models.CharField(max_length=50)
+    store_name = models.CharField(max_length=100)
+    
+    def __str__(self):
+        return self.store_name
 
+class Medicine(models.Model):
+    name = models.CharField(max_length=100)
+    description = models.TextField()
+    price = models.DecimalField(max_digits=10, decimal_places=2)
+    manufacturer = models.CharField(max_length=100)
+    
     def __str__(self):
         return self.name
 
-    class Meta:
-        verbose_name_plural = "Pharmacies"
-
-class Pharmacist(models.Model):
-    pharmacist_id = models.AutoField(primary_key=True)
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
-    pharmacy = models.ForeignKey(Pharmacy, on_delete=models.CASCADE)
-
-    def __str__(self):
-        return f"{self.user.name} - {self.pharmacy.name}"
-
-class Medicine(models.Model):
-    medicine_id = models.AutoField(primary_key=True)
-    name = models.CharField(max_length=100)
-    brand = models.CharField(max_length=100)
-    category = models.CharField(max_length=50)
-    alternative_medicines = models.ManyToManyField('self', blank=True)
-
-    def __str__(self):
-        return f"{self.name} - {self.brand}"
-
 class Inventory(models.Model):
-    inventory_id = models.AutoField(primary_key=True)
-    pharmacy = models.ForeignKey(Pharmacy, on_delete=models.CASCADE)
+    pharmacy = models.ForeignKey(Pharmacy, on_delete=models.CASCADE, related_name='inventory')
     medicine = models.ForeignKey(Medicine, on_delete=models.CASCADE)
-    quantity = models.IntegerField()
-    last_updated = models.DateTimeField(auto_now=True)
-
-    def __str__(self):
-        return f"{self.medicine.name} at {self.pharmacy.name}"
-
+    quantity = models.IntegerField(default=0)
+    
     class Meta:
-        verbose_name_plural = "Inventories"
-
-class SearchLog(models.Model):
-    search_id = models.AutoField(primary_key=True)
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
-    medicine_name = models.CharField(max_length=100)
-    timestamp = models.DateTimeField(auto_now_add=True)
-    result_found = models.BooleanField(default=False)
-
+        unique_together = ('pharmacy', 'medicine')
+    
     def __str__(self):
-        return f"{self.user.name} - {self.medicine_name}"
+        return f"{self.pharmacy.store_name} - {self.medicine.name}"
+
+@receiver(post_save, sender=Pharmacy)
+def create_pharmacy_inventory(sender, instance, created, **kwargs):
+    if created:
+        Inventory.objects.bulk_create([
+            Inventory(pharmacy=instance, medicine=medicine, quantity=0)
+            for medicine in Medicine.objects.all()
+        ])
 
 class SMSRequest(models.Model):
-    sms_id = models.AutoField(primary_key=True)
     phone_number = models.CharField(max_length=15)
     medicine_name = models.CharField(max_length=100)
     location = models.CharField(max_length=200)

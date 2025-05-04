@@ -1,8 +1,281 @@
-{% extends 'core/base.html' %}
-{% block title %} Home {% endblock title %}
+{% extends 'core/base.html' %} {% block main_content %} {% load static %} {%
+block title %}PharmaReach - Medicine for everyone, everywhere{% endblock title
+%} {% block extra_head %}
+<!-- Bootstrap CSS -->
+<link
+  href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
+  rel="stylesheet"
+/>
+<!-- Bootstrap Icons -->
+<link
+  rel="stylesheet"
+  href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css"
+/>
+<style>
+  :root {
+    --primary-blue: #0047ab;
+    --dark-bg: #222;
+    --green-nav: #004d00;
+  }
 
-{% block main_content %}
-<h1>Home Page of PharmaReach</h1>
+  body {
+    font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+    margin: 0;
+    padding: 0;
+  }
+
+  .top-header {
+    background-color: var(--primary-blue);
+    padding: 15px 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .logo {
+    display: flex;
+    align-items: center;
+    color: white;
+    text-decoration: none;
+  }
+
+  .logo:hover {
+    color: white;
+    text-decoration: none;
+  }
+
+  .logo-circle {
+    width: 30px;
+    height: 30px;
+    background-color: white;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-right: 10px;
+  }
+
+  .logo-letter {
+    color: var(--primary-blue);
+    font-weight: bold;
+  }
+
+  .language-selector {
+    color: white;
+    cursor: pointer;
+  }
+
+  .hero-section {
+    background-color: var(--primary-blue);
+    color: white;
+    padding: 40px 20px;
+    text-align: center;
+  }
+
+  .search-container {
+    max-width: 600px;
+    margin: 20px auto;
+  }
+
+  .search-input {
+    background-color: #222;
+    border: none;
+    color: white;
+    padding-left: 40px;
+  }
+
+  .search-input::placeholder {
+    color: #aaa;
+  }
+
+  .search-icon {
+    position: absolute;
+    left: 15px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #aaa;
+  }
+
+  .features-section {
+    background-color: var(--dark-bg);
+    color: white;
+    padding: 30px 0;
+  }
+
+  .feature-card {
+    padding: 20px;
+    text-align: center;
+    height: 100%;
+    cursor: pointer;
+    transition: transform 0.2s, box-shadow 0.2s;
+    text-decoration: none;
+    color: white;
+    display: block;
+  }
+
+  .feature-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+    color: white;
+    text-decoration: none;
+  }
+
+  .feature-icon {
+    font-size: 2rem;
+    margin-bottom: 15px;
+    display: inline-block;
+    width: 60px;
+    height: 60px;
+    line-height: 60px;
+    border-radius: 50%;
+    background-color: #333;
+  }
+
+  .feature-title {
+    font-size: 1.2rem;
+    margin-bottom: 10px;
+  }
+
+  .feature-description {
+    font-size: 0.9rem;
+    color: #ccc;
+  }
+
+  .bottom-nav {
+    background-color: var(--green-nav);
+    position: fixed;
+    bottom: 0;
+    width: 100%;
+    padding: 10px 0;
+  }
+
+  .nav-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    color: white;
+    text-decoration: none;
+    font-size: 0.8rem;
+  }
+
+  .nav-item:hover {
+    color: white;
+    text-decoration: none;
+    opacity: 0.8;
+  }
+
+  .nav-icon {
+    font-size: 1.5rem;
+    margin-bottom: 5px;
+  }
+</style>
+{% endblock extra_head %}
+<!-- Top Header -->
+<header class="top-header">
+  <a href="{% url 'home' %}" class="logo">
+    <div class="logo-circle">
+      <span class="logo-letter">P</span>
+    </div>
+    <span>PharmaReach</span>
+  </a>
+  <div class="language-selector"><i class="bi bi-globe"></i> Language</div>
+</header>
+
+<!-- Hero Section -->
+<section class="hero-section">
+  <h1>PharmaReach</h1>
+  <p>Medicine for everyone, everywhere</p>
+
+  <div class="search-container">
+    <form
+      action="{% url 'medicine-search' %}"
+      method="get"
+      class="position-relative"
+    >
+      <i class="bi bi-search search-icon"></i>
+      <input
+        type="text"
+        name="name"
+        class="form-control search-input"
+        placeholder="Search for medicines..."
+        required
+      />
+    </form>
+  </div>
+</section>
+
+<!-- Features Section -->
+<section class="features-section">
+  <div class="container">
+    <div class="row">
+      <!-- Find Medications -->
+      <div class="col-md-4 mb-4">
+        <a href="{% url 'medicine-search' %}" class="feature-card">
+          <div class="feature-icon">
+            <i class="bi bi-search"></i>
+          </div>
+          <h3 class="feature-title">Find Medications</h3>
+          <p class="feature-description">
+            Search for medicines and compare prices across pharmacies.
+          </p>
+        </a>
+      </div>
+
+      <!-- Refill Prescriptions -->
+      <div class="col-md-4 mb-4">
+        <div class="feature-card">
+          <div class="feature-icon">
+            <i class="bi bi-moon"></i>
+          </div>
+          <h3 class="feature-title">Refill Prescriptions</h3>
+          <p class="feature-description">
+            Easily reorder your prescriptions for delivery or pickup.
+          </p>
+        </div>
+      </div>
+
+      <!-- Health Tracking -->
+      <div class="col-md-4 mb-4">
+        <div class="feature-card">
+          <div class="feature-icon">
+            <i class="bi bi-activity"></i>
+          </div>
+          <h3 class="feature-title">Health Tracking</h3>
+          <p class="feature-description">
+            Monitor your medications and health indicators.
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Bottom Navigation -->
+<nav class="bottom-nav">
+  <div class="container">
+    <div class="row text-center">
+      <div class="col-4">
+        <a href="{% url 'home' %}" class="nav-item">
+          <i class="bi bi-house-door nav-icon"></i>
+          <span>Home</span>
+        </a>
+      </div>
+      <div class="col-4">
+        <a href="{% url 'medicine-search' %}" class="nav-item">
+          <i class="bi bi-search nav-icon"></i>
+          <span>Search</span>
+        </a>
+      </div>
+      <div class="col-4">
+        <a href="{% url 'login' %}" class="nav-item">
+          <i class="bi bi-person nav-icon"></i>
+          <span>Profile</span>
+        </a>
+      </div>
+    </div>
+  </div>
+</nav>
+
+<!-- Bootstrap JS Bundle with Popper -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 {% endblock main_content %}
-
-
